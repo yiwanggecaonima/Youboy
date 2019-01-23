@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 # Define here the models for your spider middleware
-#
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 import logging
@@ -76,6 +74,7 @@ agents = [
     "Mozilla/5.0 (Linux; U; Android 1.6; es-es; SonyEricssonX10i Build/R1FA016) AppleWebKit/528.5  (KHTML, like Gecko) Version/3.1.2 Mobile Safari/525.20.1",
     "Mozilla/5.0 (Linux; U; Android 1.6; en-us; SonyEricssonX10i Build/R1AA056) AppleWebKit/528.5  (KHTML, like Gecko) Version/3.1.2 Mobile Safari/525.20.1",
 ]
+
 class UAmiddleware():
     def process_request(self, request, spider):
         agent = random.choice(agents)
@@ -86,16 +85,14 @@ class UAmiddleware():
 class ProxyMiddleware():
     def __init__(self):
         self.proxy = None
-        self.PROXY_URL = 'http://webapi.http.zhimacangku.com/getip?num=1&type=1&pro=0&city=0&yys=100017&port=1&pack=39397&ts=0&ys=0&cs=0&lb=1&sb=0&pb=5&mr=1&regions=110000,130000,140000,150000,330000,340000,420000,430000,610000'
-        # self.PROXY_URL = 'http://webapi.http.zhimacangku.com/getip?num=1&type=1&pro=440000&city=440100&yys=100017&port=1&pack=39397&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions=110000,130000,140000,150000,330000,340000,420000,430000,610000'
-        # self.PROXY_URL = 'http://webapi.http.zhimacangku.com/getip?num=1&type=1&pro=0&city=0&yys=0&port=1&pack=38903&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions=140000,440000,500000'
+        self.PROXY_URL = ''　# 芝麻代理
         self.logger = logging.getLogger(__name__)
         self.i = 0
         self.p = None
         # self.p = ['183.163.37.253:4251', '117.94.153.131:4734', '42.87.77.79:4211', '222.185.22.88:4216', '125.106.132.175:7305', '112.194.71.69:4216', '182.37.93.71:6856', '112.194.68.100:4226', '115.208.162.131:4223', '60.166.86.227:4208', '60.186.45.7:1246', '1.25.147.192:6410', '112.84.72.200:4278', '125.64.127.172:4286', '115.226.240.9:4208', '117.67.131.26:2644', '106.46.136.112:4237', '114.224.84.77:4263', '125.123.44.139:4225', '117.67.245.78:4208', '180.118.128.42:3217', '106.110.145.170:4258', '112.122.218.24:4224', '27.28.249.193:4216', '182.45.63.230:6856', '182.99.134.189:4201', '182.87.241.51:4250', '223.215.97.232:4286', '125.89.43.100:4223', '113.120.36.207:4242','183.163.37.253:4251', '117.94.153.131:4734', '42.87.77.79:4211', '222.185.22.88:4216', '125.106.132.175:7305', '112.194.71.69:4216', '182.37.93.71:6856', '112.194.68.100:4226', '115.208.162.131:4223', '60.166.86.227:4208', '60.186.45.7:1246', '1.25.147.192:6410', '112.84.72.200:4278', '125.64.127.172:4286', '115.226.240.9:4208', '117.67.131.26:2644', '106.46.136.112:4237', '114.224.84.77:4263', '125.123.44.139:4225', '117.67.245.78:4208', '180.118.128.42:3217', '106.110.145.170:4258', '112.122.218.24:4224', '27.28.249.193:4216', '182.45.63.230:6856', '182.99.134.189:4201', '182.87.241.51:4250', '223.215.97.232:4286', '125.89.43.100:4223', '113.120.36.207:4242']
     def get_proxy(self):
         try:
-            Request = urllib.request.Request(self.PROXY_URL, )
+            Request = urllib.request.Request(self.PROXY_URL)
             response = urllib.request.urlopen(Request,timeout=5)
             data = response.read().decode()
             response.close()
@@ -105,7 +102,7 @@ class ProxyMiddleware():
                 ret = re.compile(r'请将(.*)设置为白名单')
                 ip = re.findall(ret, data)[0]
                 print(ip, type(ip))
-                white_ip = 'http://web.http.cnapi.cc/index/index/save_white?neek=60658&appkey=c76d3c1fddc89df92151a2cfb6388a5f&white=' + ip
+                white_ip = 'white=' + ip
                 result = requests.get(white_ip)
                 if '保存成功' in result.text:
                     print('白名单保存成功')
@@ -115,7 +112,7 @@ class ProxyMiddleware():
                 ret = re.compile(r'请检测您现在的(.*)是否在套餐')
                 ip = re.findall(ret, data)[0]
                 print(ip, type(ip))
-                white_ip = 'http://web.http.cnapi.cc/index/index/save_white?neek=60658&appkey=c76d3c1fddc89df92151a2cfb6388a5f&white=' + ip
+                white_ip = '&white=' + ip
                 result = requests.get(white_ip)
                 if '保存成功' in result.text:
                     print('白名单保存成功')
@@ -134,13 +131,9 @@ class ProxyMiddleware():
 
     def process_request(self, request, spider):
         print("当前ip",self.proxy)        # request.meta['proxy'] = 'http://127.0.0.1:1080'
+        # 如果重试４次　那就更换ip
         if request.meta.get('retry_times') == 4:
-            # time.sleep(random.choice([1,2,2.5,3,3.5]))
             try:
-                # if len(self.proxy) == 0:
-                #     self.p = ['183.163.37.253:4251', '117.94.153.131:4734', '42.87.77.79:4211', '222.185.22.88:4216', '125.106.132.175:7305', '112.194.71.69:4216', '182.37.93.71:6856', '112.194.68.100:4226', '115.208.162.131:4223', '60.166.86.227:4208', '60.186.45.7:1246', '1.25.147.192:6410', '112.84.72.200:4278', '125.64.127.172:4286', '115.226.240.9:4208', '117.67.131.26:2644', '106.46.136.112:4237', '114.224.84.77:4263', '125.123.44.139:4225', '117.67.245.78:4208', '180.118.128.42:3217', '106.110.145.170:4258', '112.122.218.24:4224', '27.28.249.193:4216', '182.45.63.230:6856', '182.99.134.189:4201', '182.87.241.51:4250', '223.215.97.232:4286', '125.89.43.100:4223', '113.120.36.207:4242','183.163.37.253:4251', '117.94.153.131:4734', '42.87.77.79:4211', '222.185.22.88:4216', '125.106.132.175:7305', '112.194.71.69:4216', '182.37.93.71:6856', '112.194.68.100:4226', '115.208.162.131:4223', '60.166.86.227:4208', '60.186.45.7:1246', '1.25.147.192:6410', '112.84.72.200:4278', '125.64.127.172:4286', '115.226.240.9:4208', '117.67.131.26:2644', '106.46.136.112:4237', '114.224.84.77:4263', '125.123.44.139:4225', '117.67.245.78:4208', '180.118.128.42:3217', '106.110.145.170:4258', '112.122.218.24:4224', '27.28.249.193:4216', '182.45.63.230:6856', '182.99.134.189:4201', '182.87.241.51:4250', '223.215.97.232:4286', '125.89.43.100:4223', '113.120.36.207:4242']
-
-                # self.proxy = self.p.pop(0)
                 self.proxy = self.get_proxy()
                 if self.proxy:
                     request.meta["proxy"] = "http://" + self.proxy
@@ -149,7 +142,8 @@ class ProxyMiddleware():
                     # return request
             except IndexError as e:
                 print("IndexError .....",e.args)
-
+                
+         
 class YouboySpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
