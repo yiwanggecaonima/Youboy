@@ -22,12 +22,12 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 ROBOTSTXT_OBEY =False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 4
+CONCURRENT_REQUESTS = 8
 DOWNLOAD_TIMEOUT = 10
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 4
+DOWNLOAD_DELAY = 1
 RETRY_ENABLED = True
 RETRY_TIMES = 4
 # The download delay setting will honor only one of:
@@ -103,6 +103,6 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-MONGO_URI = '43.107.137.63'
+MONGO_URI = ''
 MONGO_PORT = 27017
 MONGO_DB = 'scrapy_youboy'
