@@ -35,7 +35,7 @@ class MongoPipeline(object):
         return cls(mongo_uri=crawler.settings.get('MONGO_URI'), mongo_port=crawler.settings.get('MONGO_PORT'),mongo_db=crawler.settings.get('MONGO_DB'))
 
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient("47.107.137.63", 27017,connect=True)
+        self.client = pymongo.MongoClient("", 27017,connect=True)
         self.db = self.client['scrapy_hc']
 
     def process_item(self,item,spider):
